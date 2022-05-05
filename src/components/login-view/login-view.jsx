@@ -1,47 +1,99 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import RegisterView from '../registration-view/registration-view';
-import {Form, FormGroup, Button, Row, Col, Container} from 'react-bootstrap';
-import './login-view.scss'
+import { Form, Button, Card, CardGroup, Container, Col, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom'
+import "./login-view.scss"
+import axios from 'axios';
 
 export function LoginView(props) {
-  const [ username, setUsername ] = useState('');
-  props.onLoggedIn('simon');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
+    //validation declarations
+    const [usernameErr, setUsernameErr] = useState('');
+    const [passwordErr, setPasswordErr] = useState('');
 
-const handleNewUser = (e) => {
-  console.log('Registration...');
-  props.useRef
-  return <RegisterView />;
+    const validate = () => {
+        let isReq = true;
+        if (!username) {
+            setUsernameErr('Username Required');
+            isReq = false;
+        } else if (username.length < 2) {
+            setUsernameErr('Username must be at least 2 characters long');
+            isReq = false;
+        }
+        if (!password) {
+            setPasswordErr('Password Required');
+            isReq = false;
+        } else if (password.length < 6) {
+            setPasswordErr('Password must be at least 6 characters long');
+            isReq = false;
+        }
+        return isReq;
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const isReq = validate();
+
+        if (isReq) {
+            axios.post('https://cinesam2022.herokuapp.com/login', {
+                Username: username,
+                Password: password
+            })
+            .then(response => {
+              const data = response.data;
+              //username has been changed to data
+              props.onLoggedIn(data);
+          })
+          .catch(e => {
+              console.log('no such user')
+          });
+  }
 };
 
+
 return (
-  <Row className="d-flex justify-content-evenly">
-      <Col></Col>
-      <Col xs={4} className="left_side">
-        <Form className="d-flex flex-column justify-content-between align-items-center p-2 mt-4"> 
-          <Form.Group controlId="formUsername" className="mt-3">
-            <Form.Label>Username:</Form.Label>
-            <Form.Control type="text" onChange={e => setUsername(e.target.value)} />
-          </Form.Group>
+  <Container id="login-form">
+            <Row>
+                <Col>
+                    <CardGroup>
+                        <Card id="login-card">
+                            <Card.Body>
+                                <Card.Title id="login-card-title">Please login</Card.Title>
+                                <Form>
+                                    <Form.Group controlId="formUsername">
+                                        <Form.Label id="login-form-label">Username</Form.Label>
+                                        <Form.Control type="text" onChange={e => setUsername(e.target.value)}
+                                            placeholder="Enter your username" />
+                                        {usernameErr && <p>{usernameErr}</p>}
+                                    </Form.Group>
+                                    <Form.Group controlId="formPassword">
+                                        <Form.Label id="login-form-label">Password</Form.Label>
+                                        <Form.Control type="password" onChange={e => setPassword(e.target.value)}
+                                            placeholder="Enter your password" />
+                                        {passwordErr && <p>{passwordErr}</p>}
+                                    </Form.Group>
+                                    <Button id="login-button" variant="primary" type="submit" onClick={handleSubmit}>Login</Button>
+                                </Form>
+                                <Card.Text>Not registered yet?</Card.Text>
+                                <div id="register-container">
+                                    <Link to="/register">
+                                        <Button id="link-to-register-button">Register now</Button>
+                                    </Link>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </CardGroup>
+                </Col>
+            </Row>
+        </Container>
 
-          <Form.Group controlId="formPassword" className="mt-3">
-            <Form.Label>Password:</Form.Label>
-            <Form.Control type="password" onChange={e => setPassword(e.target.value)} />
-          </Form.Group>
-
-          <Button variant="primary" type="submit" onClick={handleSubmit} className="mt-4">
-            Submit
-          </Button>
-        </Form>
-      </Col>
-
-      <Col xs={6} className="right_side d-flex flex-column justify-content-center align-items-center p-2 mt-4">
-        <p>Please enter your details to login into the application.</p>
-        <p>If you don't have an account, please <a href="#" onClick={handleNewUser}>click here</a> to register.</p>
-      </Col>
-      <Col></Col>
-     </Row>
-
-  );
+    );
 }
+LoginView.propTypes = {
+  user: PropTypes.shape({
+    Username: PropTypes.string.isRequired,
+    Password: PropTypes.string.isRequired,
+})};
+

@@ -1,56 +1,59 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Card, ListGroup, ListGroupItem, Button, Row, Col, Image} from 'react-bootstrap';
-import CardGroup from 'react-bootstrap/CardGroup';
-import './movie-view.css'
+import React from "react";
+import PropTypes from "prop-types";
+import "./movie-view.scss"
+import { Card, Col, Container, Row, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
 
 export class MovieView extends React.Component {
 
-  render() {
-    const { movie, onBackClick } = this.props;
+    render() {
+        const { movie, onBackClick } = this.props;
 
-    const defineGenre = () =>{
-      // axios.get('https://simonsmyflixapp.herokuapp.com/')
-      //     .then(response => {}
-      //     )
-      //     .catch(error => {
-      //       console.log(error);
-      //     });
-    };
+        return (
+            <Container>
+                <Row>
+                    <Col>
+                        <Card id="movie-view">
+                            <Card.Body>
+                                <Card.Img id="movie-view-image" variant="top" src={movie.ImagePath} />
+                                <Card.Title id="movie-title" className="movie-title">{movie.Title}</Card.Title>
+                                <Card.Text id="movie-description" className="movie-description">
+                                    {movie.Description}</Card.Text>
+                                <Link to={`/director/${movie.Director.Name}`}>
+                                    <Button variant="link" id="movie-director" className="movie-director">
+                                        Director: {movie.Director.Name}</Button>
+                                </Link>
+                                <Link to={`/genre/${movie.Genre.Name}`}>
+                                    <Button variant="link" id="movie-genre" className="movie-gerne">
+                                        Genre: {movie.Genre.Name}</Button>
+                                </Link>
 
-    function isFeatured(val){
-      if (val)
-       return <strong>Available in Theathers</strong>;
-       else
-       return 'N/A in Theathers';
+                            </Card.Body>
+                        </Card>
+                        <Button id="movie-view-button" onClick={() => { onBackClick(); }}>Back</Button>
+                        <Button id="movie-view-button" onClick={() => { }}>Add to favorites</Button>
+                    </Col>
+                </Row>
+            </Container>
+        );
     }
-
-
-    return (
-      <Row className="w-100 justify-content-around mx-auto">
-        <Col md={8}>   
-			<ListGroup>
-				<ListGroup.Item><h3>{movie.Title}</h3></ListGroup.Item>
-				<ListGroup.Item>Genre: {defineGenre()}</ListGroup.Item>
-				<ListGroup.Item>Actors:{}</ListGroup.Item>
-				<ListGroup.Item>{isFeatured(movie.Featured)}</ListGroup.Item>
-				<div>
-					<ListGroup.Item className="w-100 d-flex justify-content-between">
-						<Button variant="link text-muted">Add to favourites</Button>
-						<Button variant="link text-muted">Remove from Favourites</Button>
-					</ListGroup.Item>
-				</div>
-
-			</ListGroup>  
-			<div className="p-5 h4 text-muted">
-			{movie.Description}
-			</div>  
-        </Col>
-
-		<Col md={4}> 
-        	<Image className="poster" src={movie.ImagePath} crossOrigin="anonymous" onClick={() => onMovieClick(movie)}/>
-        </Col>
-		<Button variant="primary" onClick={() => { onBackClick(null); }}>Back</Button>
-    </Row>
-    )};
 }
+
+MovieView.propTypes = {
+    movie: PropTypes.shape({
+        Title: PropTypes.string.isRequired,
+        Description: PropTypes.string.isRequired,
+        Genre: PropTypes.shape({
+            Name: PropTypes.string.isRequired,
+            Description: PropTypes.string.isRequired
+        }),
+        Director: PropTypes.shape({
+            Name: PropTypes.string.isRequired,
+            Bio: PropTypes.string.isRequired,
+            Birth: PropTypes.string.isRequired
+        }),
+        Actors: PropTypes.array,
+        ImagePath: PropTypes.string.isRequired
+    }).isRequired
+};
