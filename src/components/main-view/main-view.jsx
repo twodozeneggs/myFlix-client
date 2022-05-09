@@ -13,6 +13,13 @@ import { MovieView } from "../movie-view/movie-view";
 import { DirectorView } from "../director-view/director-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { NavbarView } from "../navbar-view/navbar-view";
+import { connect } from 'react-redux';
+
+import { BrowserRouter as Router, Route } from ' react-router-dom';
+
+import { setMovies } from '../../actions/actions';
+
+import MoviesList from '../movies-list/movies-list';
 
 class MainView extends React.Component {
 
@@ -22,8 +29,6 @@ class MainView extends React.Component {
             user: null
         };
     }
-
-    // Query cinesam2022 API /movies endpoint to set movies state
     getMovies(token) {
         axios.get('https://simonsmyflixapp.herokuapp.com/', {
             headers: { Authorization: `Bearer ${token}` }

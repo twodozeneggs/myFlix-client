@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button, Card, CardGroup, Container, Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
+import { connect } from "react-redux";
+
+import { setUser } from '../../actions/actions';
+
 import "./login-view.scss"
+
 import axios from 'axios';
 
 export function LoginView(props) {
@@ -35,26 +40,26 @@ export function LoginView(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
         const isReq = validate();
-
         if (isReq) {
-            axios.post('https://cinesam2022.herokuapp.com/login', {
-                Username: username,
-                Password: password
-            })
-            .then(response => {
-              const data = response.data;
-              //username has been changed to data
-              props.onLoggedIn(data);
-          })
-          .catch(e => {
-              console.log('no such user')
-          });
-  }
-};
+            axios
+                .post("https://cinesam2022.herokuapp.com/login", {
+                    Username: username,
+                    Password: password,
+                })
+                .then((response) => {
+                    const data = response.data;
+                    console.log(data)
+                    props.onLoggedIn(data);
 
+                })
+                .catch((error) => {
+                    console.log("Error:", error);
+                });
+        }
+    };
 
-return (
-  <Container id="login-form">
+    return (
+        <Container id="login-form">
             <Row>
                 <Col>
                     <CardGroup>
@@ -91,9 +96,15 @@ return (
 
     );
 }
-LoginView.propTypes = {
-  user: PropTypes.shape({
-    Username: PropTypes.string.isRequired,
-    Password: PropTypes.string.isRequired,
-})};
 
+LoginView.propTypes = {
+    user: PropTypes.shape({
+        Username: PropTypes.string.isRequired,
+        Password: PropTypes.string.isRequired,
+    }),
+    onLoggedIn: PropTypes.func.isRequired
+};
+
+
+
+export default LoginView;

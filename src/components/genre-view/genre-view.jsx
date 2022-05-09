@@ -51,4 +51,4 @@ export class GenreView extends React.Component {
             </Container>
         );
     }
-} 
+}

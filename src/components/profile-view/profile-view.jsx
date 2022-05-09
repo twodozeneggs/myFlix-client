@@ -282,3 +282,9 @@ ProfileView.propTypes = {
     })).isRequired,
     onBackClick: PropTypes.func.isRequired
 }; 
+
+let mapStateToProps = state => {
+    return { movies: state.movies, user: state.user }
+}
+
+export default connect(mapStateToProps, { setUser })(ProfileView);
